@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 
 namespace LinkedListClass.Tests
 {
@@ -261,8 +262,7 @@ namespace LinkedListClass.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(new int[] { 1, -2, 3, 2, -98, -56, -33 }, 8, "Wrong amount: we don't have such amount of elements!")]
-        [TestCase(new int[] { 0, 3, 67, 23, -45, -67, -23, -23, 56, 3 }, -7, "Wrong amount: amount must be positive!")]
+        [TestCase(new int[] { 0, 3, 67, 23, -45, -67, -23, -23, 56, 3 }, -7, "Wrong amount: it must be positive!")]
         public void RemoveFirstMultipleNegativeTest(int[] array, int amount, string expectedMessage)
         {
             //arrange
@@ -290,8 +290,7 @@ namespace LinkedListClass.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(new int[] { 1, -2, 3, 2, -98, -56, -33 }, 8, "Wrong amount: we don't have such amount of elements!")]
-        [TestCase(new int[] { 0, 3, 67, 23, -45, -67, -23, -23, 56, 3 }, -7, "Wrong amount: amount must be positive!")]
+        [TestCase(new int[] { 0, 3, 67, 23, -45, -67, -23, -23, 56, 3 }, -7, "Wrong amount: it must be positive!")]
         public void RemoveLastMultipleNegativeTest(int[] array, int amount, string expectedMessage)
         {
             //arrange
@@ -304,7 +303,7 @@ namespace LinkedListClass.Tests
         }
 
         [TestCase(new int[] { 1, -2, 3, 2, -98, -56, -33 }, 1, 2, "1 2 -98 -56 -33 ")]
-        [TestCase(new int[] { 0, 3, 67, 23, -45, -67, -23, -23, 56, 3 }, 5, 4, "0 3 67 23 -45 -67 ")]
+        [TestCase(new int[] { 0, 3, 67, 23, -45, -67, -23, -23, 56, 3 }, 6, 7, "0 3 67 23 -45 -67 ")]
         [TestCase(new int[] { 0, 0, 0 }, 0, 1, "0 0 ")]
         public void RemoveAtMultipleTest(int[] array, int index, int amount, string expected)
         {
@@ -319,7 +318,6 @@ namespace LinkedListClass.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(new int[] { 1, -2, 3, 2, -98, -56, -33 }, 5, 2, "Wrong position: we don't have such amount of elements!")]
         [TestCase(new int[] { 0, 3, 67, 23, -45, -67, -23, -23, 56, 3 }, -5, 4, "Wrong position: index must be positive!")]
         [TestCase(new int[] { 0, 0, 0 }, 0, -1, "Wrong amount: amount must be positive!")]
         public void RemoveAtMultipleNegativeTest(int[] array, int index, int amount, string expectedMessage)

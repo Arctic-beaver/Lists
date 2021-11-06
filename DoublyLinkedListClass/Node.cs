@@ -13,7 +13,7 @@ namespace LinkedListClass
 
         public Node()
         {
-
+    
         }
         public Node(int val)
         {

@@ -10,7 +10,8 @@ namespace LinkedListClass
 
         public LinkedList()
         {
-            InitHeadAndTail();
+            _head = null;
+            _tail = null;
         }
 
         public LinkedList(int val)
@@ -51,6 +52,7 @@ namespace LinkedListClass
             while (shovel != null)
             {
                 str += $"{shovel.Data} ";
+                shovel = shovel.Next;
             }
             return str;
         }
@@ -231,6 +233,7 @@ namespace LinkedListClass
             }
 
             Node removablePrev = GetNode(idx - 1);
+            if (removablePrev == _tail) throw new ArgumentException("Wrong position: we don't have such amount of elements!");
             if (removablePrev.Next == _tail)
             {
                 RemoveLast();
@@ -244,7 +247,7 @@ namespace LinkedListClass
         {
             if (n < 0) throw new ArgumentException("Wrong amount: it must be positive!");
             int counterOfdeletedElementsAmount = 0;
-            while (_head != null && counterOfdeletedElementsAmount <= n)
+            while (_head != null && counterOfdeletedElementsAmount < n)
             {
                 _head = _head.Next;
                 counterOfdeletedElementsAmount += 1;
@@ -261,13 +264,19 @@ namespace LinkedListClass
             if (n < 0) throw new ArgumentException("Wrong amount: it must be positive!");
 
             int length = GetLength();
-            Node lasEl = GetNode(length - n - 1, length);
-            lasEl.Next = null;
-            _tail = lasEl;
+            int index = length - n - 1;
+            if (index < 0) _head = null;
+            else
+            {
+                Node lasEl = GetNode(index, length);
+                lasEl.Next = null;
+                _tail = lasEl;
+            }
         }
 
         public void RemoveAtMultiple(int idx, int n)
         {
+            if (n < 0) throw new ArgumentException("Wrong amount: amount must be positive!");
             if (idx == 0)
             {
                 RemoveFirstMultiple(n);
@@ -277,7 +286,7 @@ namespace LinkedListClass
             int counterOfdeletedElementsAmount = 0;
             Node shovel = GetNode(idx - 1);
 
-            while (shovel.Next != null && counterOfdeletedElementsAmount <= n)
+            while (shovel.Next != null && counterOfdeletedElementsAmount < n)
             {
                 shovel.Next = shovel.Next.Next;
                 counterOfdeletedElementsAmount += 1;
@@ -312,15 +321,26 @@ namespace LinkedListClass
             Node shovel = _head;
             int idx = 0;
             int counter = 0;
-
+            Node removablePrev = null;
             while (shovel != null)
             {
                 if (shovel.Data == val)
                 {
-                    RemoveAt(idx);
+                    if (removablePrev == null)
+                    {
+                        RemoveFirst();
+                    }
+                    else if (removablePrev == _tail) throw new ArgumentException("Wrong position: we don't have such amount of elements!");
+                    else if (removablePrev.Next == _tail)
+                    {
+                        RemoveLast();
+                    }
+                    else removablePrev.Next = removablePrev.Next.Next;
+
                     counter += 1;
                 }
                 idx += 1;
+                removablePrev = shovel;
                 shovel = shovel.Next;
             }
             return counter;
@@ -383,7 +403,7 @@ namespace LinkedListClass
             while (idxReal < idx)
             {
                 shovel = shovel.Next;
-                idx += 1;
+                idxReal += 1;
             }
 
             return shovel;
@@ -401,7 +421,7 @@ namespace LinkedListClass
             while (idxReal < idx)
             {
                 shovel = shovel.Next;
-                idx += 1;
+                idxReal += 1;
             }
 
             return shovel;
@@ -419,70 +439,32 @@ namespace LinkedListClass
             while (idxReal < idx)
             {
                 shovel = shovel.Next;
-                idx += 1;
+                idxReal += 1;
             }
 
             return shovel.Data;
         }
 
-        private void SwapNodes(int idxFirst, int idxSec)
-        {
-            if (idxFirst > idxSec) Swap(ref idxFirst, ref idxSec);
-
-            Node secPrev = GetNode(idxSec - 1);
-            Node firstPrev, first;
-            if (idxFirst != 0)
-            {
-                firstPrev = GetNode(idxFirst - 1);
-                first = firstPrev.Next;
-            }
-            else
-            {
-                first = GetNode(idxFirst);
-                firstPrev = null;
-            }
-
-            if (_tail == secPrev.Next)
-            {
-                _tail = first;
-            }
-
-            if (idxFirst == 0)
-            {
-                _head = secPrev.Next;
-                Node tmp = first.Next;
-                first.Next = secPrev.Next.Next;
-                secPrev.Next.Next = tmp;
-
-                secPrev.Next = first;
-            }
-            else
-            {
-                Node tmp = firstPrev.Next.Next;
-                firstPrev.Next.Next = secPrev.Next.Next;
-                secPrev.Next.Next = tmp;
-
-                tmp = firstPrev.Next;
-                firstPrev.Next = secPrev.Next;
-                secPrev.Next = tmp;
-            }
-        }
-
-        private void Swap(ref int a, ref int b)
-        {
-            int tmp = a;
-            a = b;
-            b = tmp;
-        }
-
         public void Reverse()
         {
-            int length = GetLength();
+            RecursiveReverse(ref _head);
+        }
 
-            for (int i = 0; i < length / 2; i++)
-            {
-                SwapNodes(i, length - 1 - i);
-            }
+        private void RecursiveReverse(ref Node node)
+        {
+            if (node == null || node.Next == null) return;
+
+            Node left;
+            Node next;
+
+            left = node;
+            next = left.Next;
+
+            RecursiveReverse(ref next);
+
+            left.Next.Next = left;
+            left.Next = null;
+            node = next;
         }
 
         public int Max()
@@ -572,8 +554,16 @@ namespace LinkedListClass
             _head = sorted._head;
         }
 
-        private void InsertNewNodeInAList(Node newNode, ref Node head, ref Node tail, bool desc)
+        private Node Clone(Node node)
         {
+            Node clone = new Node(node.Data);
+            return clone;
+        }
+
+        private void InsertNewNodeInAList(Node node, ref Node head, ref Node tail, bool desc)
+        {
+            Node newNode = Clone(node);
+
             if (head == null)
             {
                 head = newNode;
@@ -582,7 +572,7 @@ namespace LinkedListClass
             }
 
             Node shovel = head;
-            Node prevToPutNewNode = head;
+            Node prevToPutNewNode = null;
 
             if (desc)
             {
@@ -603,7 +593,7 @@ namespace LinkedListClass
 
             Node tmp;
 
-            if (prevToPutNewNode == head)
+            if (prevToPutNewNode == null)
             {
                 tmp = head;
                 head = newNode;
