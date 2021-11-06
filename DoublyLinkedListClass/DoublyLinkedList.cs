@@ -2,7 +2,7 @@
 
 namespace DoublyLinkedListClass
 {
-    public class Class1
+    public class DoublyLinkedList
     {
     }
 }

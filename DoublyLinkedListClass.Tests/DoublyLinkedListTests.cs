@@ -2,7 +2,8 @@ using NUnit.Framework;
 
 namespace DoublyLinkedListClass.Tests
 {
-    public class Tests
+    public class DoublyLinkedListTests
+
     {
         [SetUp]
         public void Setup()
